@@ -89,7 +89,9 @@ if (Configure::read('debug')) {
     // disable router cache during development
     Configure::write('Cache._cake_routes_.duration', '+2 seconds');
     Configure::write('DebugKit.forceEnable', TRUE);
-    Plugin::load('DebugKit', ['bootstrap' => TRUE]);
+    Plugin::load('DebugKit', ['bootstrap' => true, 'routes' => true]);
+	Plugin::load('Josegonzalez/Upload');
+	Plugin::load('Search');
 }
 
 /*
@@ -207,5 +209,4 @@ header('Content-Type: application/json');
 //Inflector::rules('irregular', ['red' => 'redlings']);
 //Inflector::rules('uninflected', ['dontinflectme']);
 //Inflector::rules('transliteration', ['/å/' => 'aa']);
-Plugin::load('Josegonzalez/Upload');
-Plugin::load('Search');
+
