@@ -255,9 +255,9 @@ return [
             // 'database' => 'm37p7o7wm8xubu0t',
             // PROD
             'host' => 'localhost', //199.201.90.12
-            'username' => 'blinknet_prod',
-            'password' => '9Wgwi!K7v8Yy',
-            'database' => 'blinknet_production',
+            'username' => 'root',
+            'password' => '',
+            'database' => 'blinknet',
             /*
              * CakePHP will use the default DB port based on the driver selected
              * MySQL on MAMP uses port 8889, MAMP users will want to uncomment
