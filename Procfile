@@ -1,1 +1,1 @@
-web: vendor/bin/heroku-php-nginx -c webroot
+web: vendor/bin/heroku-php-nginx webroot
