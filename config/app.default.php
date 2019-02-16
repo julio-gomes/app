@@ -254,7 +254,7 @@ return [
             // 'password' => 'm7ypx6efdyc5a17a',
             // 'database' => 'm37p7o7wm8xubu0t',
             // PROD
-            'host' => 'localhost', //199.201.90.12
+            'host' => '199.201.90.12', //199.201.90.12
             'username' => 'blinknet_prod',
             'password' => '9Wgwi!K7v8Yy',
             'database' => 'blinknet_production',
