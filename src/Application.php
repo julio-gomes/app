@@ -40,8 +40,6 @@ class Application extends BaseApplication
     {
         $this->addPlugin('Search');
 
-        $this->addPlugin('DebugKit');
-
         $this->addPlugin('ADmad/JwtAuth');
 
         $this->addPlugin('Crud');
@@ -63,9 +61,6 @@ class Application extends BaseApplication
          * Only try to load DebugKit in development mode
          * Debug Kit should not be installed on a production system
          */
-        if (Configure::read('debug')) {
-            $this->addPlugin(\DebugKit\Plugin::class);
-        }
     }
 
     /**
