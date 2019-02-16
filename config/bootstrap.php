@@ -1,6 +1,4 @@
 <?php
-
-// Load Composer autoload.
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -90,9 +88,9 @@ if (Configure::read('debug')) {
     Configure::write('Cache._cake_core_.duration', '+2 minutes');
     // disable router cache during development
     Configure::write('Cache._cake_routes_.duration', '+2 seconds');
-   
 	Plugin::load('Josegonzalez/Upload');
 	Plugin::load('Search');
+    
 }
 
 /*
@@ -210,4 +208,5 @@ header('Content-Type: application/json');
 //Inflector::rules('irregular', ['red' => 'redlings']);
 //Inflector::rules('uninflected', ['dontinflectme']);
 //Inflector::rules('transliteration', ['/å/' => 'aa']);
+
 

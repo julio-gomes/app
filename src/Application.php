@@ -38,6 +38,7 @@ class Application extends BaseApplication
      */
     public function bootstrap()
     {
+        
         $this->addPlugin('Search');
 
         $this->addPlugin('ADmad/JwtAuth');
@@ -61,6 +62,7 @@ class Application extends BaseApplication
          * Only try to load DebugKit in development mode
          * Debug Kit should not be installed on a production system
          */
+       
     }
 
     /**

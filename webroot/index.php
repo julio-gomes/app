@@ -16,8 +16,6 @@
  */
 
 // Check platform requirements
-
-define('CAKE_CORE_INCLUDE_PATH', ROOT . DS . APP_DIR . "/Vendor/cakephp/cakephp/lib");
 require dirname(__DIR__) . '/config/requirements.php';
 
 // For built-in server
