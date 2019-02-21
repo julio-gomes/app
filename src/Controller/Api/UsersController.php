@@ -84,6 +84,7 @@ class UsersController extends AppController
         $userType = @$params['userType'] ?: 'seller';
         $locationFilter = @$params['locationFilter'] ?: null;
         $filterValue = @$params['filterValue'] ?: null;
+        
         $query = $this->Users->find()->distinct('Users.id');
 
         if ($params['userType'] == 'seller') {
