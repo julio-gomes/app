@@ -21,7 +21,7 @@ class FeedsController extends AppController
         parent::initialize();
         //$this->Auth->allow();
         $this->Crud->addListener('relatedModels', 'Crud.RelatedModels');
-        $this->Auth->allow(['add', 'listfeed', 'getbyuserid', 'delete']);
+        $this->Auth->allow(['add', 'listfeed', 'getbyuserid', 'delete', 'listfeedRequests']);
     }
 
     public function beforeFilter(\Cake\Event\Event $event)
@@ -123,6 +123,66 @@ class FeedsController extends AppController
 
         try {
             $query = $this->Feeds->find('all', ['contain' => ['Users']])->order(['created' => 'DESC']);
+
+            $resultData = [];
+            $resultQuery = $query->toArray();
+
+            if (count($resultQuery) > 0) {
+                
+                $indexItem = 0;
+                $begin = ($page - 1) * $lengthPage;
+                $end = (($page - 1) * $lengthPage) + $lengthPage;
+
+                foreach ($resultQuery as $feed) {
+                    if ($begin <= $indexItem && $indexItem < $end) {
+
+                        $person = $personTable->find('all')->where(['user_id = ' => $feed->user_id]);
+                        $feed->person = $person;
+
+                        array_push($resultData, $feed);
+                    }
+
+                    $indexItem = $indexItem + 1;
+                }
+            }
+
+            $response['data'] = $resultData;
+
+            // foreach ($query as $feed) {
+            //     $person = $personTable->find('all')->where(['user_id = ' => $feed->user_id]);
+            //     $feed->person = $person;
+            // }
+
+            // $response['data'] = $query;
+        } catch (\Exception $e) {
+            $response['status'] = $e;
+            //$response['status'] = 'error';
+        }
+
+        $this->set($response);
+        $this->setJsonResponse($response);
+    }
+
+    public function listfeedRequests()
+    {
+        $response = [
+            'status' => 'ok',
+            'data' => [],
+            '_serialize' => ['success', 'data', 'status'],
+        ];
+
+        $lengthPage = 10;
+        $page = $this->request->query['page'];
+
+        $this->paginate = ['limit' => 40];
+
+        $personTable = TableRegistry::get('persons');
+
+        try {
+            $query = $this->Feeds->find('all', [
+                'contain' => ['Users']])
+                ->order(['created' => 'DESC'])
+                ->where(['Feeds.receiveRequest' => true]);
 
             $resultData = [];
             $resultQuery = $query->toArray();
