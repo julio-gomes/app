@@ -125,8 +125,8 @@ class FeedsController extends AppController
 
         try {
             $query = $this->Feeds->find('all', ['contain' => ['Users']])
-            ->order(['created' => 'DESC'])
-            ->where(['Feeds.receiveRequest'=> false]);
+            ->order(['created' => 'DESC']);
+            //->where(['Feeds.receiveRequest'=> false]);
             
             $resultData = [];
             $resultQuery = $query->toArray();
