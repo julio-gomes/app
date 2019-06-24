@@ -51,7 +51,7 @@ class FeedsController extends AppController
         $response = [
             'data' => null,
             'status' => 'ok',
-            '_serialize' => ['data', 'status'],
+            '_serialize' => ['data', 'status', 'entity'],
         ];
 
         $feedsTable = TableRegistry::get('feeds');
@@ -63,8 +63,10 @@ class FeedsController extends AppController
         } else {
             $entity = $feedsTable->newEntity($this->request->getData());
             $entity->created = date('Y-m-d H:i:s');
+            $entity->receiveRequest = $this->request->getData('receiveRequest');
         }
 
+        $response['entity'] = $entity;
         try {
             if ($this->Feeds->save($entity)) {
                 $response['data'] = $entity;
