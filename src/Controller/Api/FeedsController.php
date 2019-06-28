@@ -177,6 +177,7 @@ class FeedsController extends AppController
 
         $lengthPage = 10;
         $page = $this->request->query['page'];
+        $user_id = $this->request->query['user_id'];
 
         $this->paginate = ['limit' => 40];
 
@@ -187,6 +188,10 @@ class FeedsController extends AppController
                 'contain' => ['Users']])
                 ->order(['created' => 'DESC'])
                 ->where(['Feeds.receiveRequest' => true]);
+
+            $query->matching('Users', function ($q) use ($user_id) {
+                return $q->where(['Users.id' => $user_id]);
+            });
             
             $feedsUsers = $interestFeedsusersTable->find('all')
                             ->contain(['Users']);
