@@ -7,6 +7,8 @@ use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Security;
 use Firebase\JWT\JWT;
+use Cake\Routing\Router;
+
 
 /**
  * Feeds Controller
@@ -210,6 +212,7 @@ class FeedsController extends AppController
 
                         $person = $personTable->find('all')->where(['user_id = ' => $feed->user_id]);
                         $feed->person = $person;
+                        $feed->picture = isset($feed->picture) ? $feed->picture : Router::url("/", true).'img/no-photo.png';
 
                         $feedsUsers = $interestFeedsusersTable->find('all')
                             ->contain(['Users'])
