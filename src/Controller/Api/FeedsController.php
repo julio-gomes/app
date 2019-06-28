@@ -21,7 +21,7 @@ class FeedsController extends AppController
         parent::initialize();
         //$this->Auth->allow();
         $this->Crud->addListener('relatedModels', 'Crud.RelatedModels');
-        $this->Auth->allow(['add', 'listfeed', 'getbyuserid', 'delete', 'listfeedRequests']);
+        $this->Auth->allow(['saveReceiveRequest', 'add', 'listfeed', 'getbyuserid', 'delete', 'listfeedRequests']);
     }
 
     public function beforeFilter(\Cake\Event\Event $event)
@@ -172,7 +172,7 @@ class FeedsController extends AppController
         $response = [
             'status' => 'ok',
             'data' => [],
-            '_serialize' => ['success', 'data', 'status'],
+            '_serialize' => ['success', 'data', 'status', 'feedsUsers'],
         ];
 
         $lengthPage = 10;
@@ -181,12 +181,15 @@ class FeedsController extends AppController
         $this->paginate = ['limit' => 40];
 
         $personTable = TableRegistry::get('persons');
-
+        $interestFeedsusersTable = TableRegistry::get('interest_feeds_users');
         try {
             $query = $this->Feeds->find('all', [
                 'contain' => ['Users']])
                 ->order(['created' => 'DESC'])
                 ->where(['Feeds.receiveRequest' => true]);
+            
+            $feedsUsers = $interestFeedsusersTable->find('all')
+                            ->contain(['Users']);
 
             $resultData = [];
             $resultQuery = $query->toArray();
@@ -197,15 +200,20 @@ class FeedsController extends AppController
                 $begin = ($page - 1) * $lengthPage;
                 $end = (($page - 1) * $lengthPage) + $lengthPage;
 
-                foreach ($resultQuery as $feed) {
+                foreach ($resultQuery as $key => $feed) {
                     if ($begin <= $indexItem && $indexItem < $end) {
 
                         $person = $personTable->find('all')->where(['user_id = ' => $feed->user_id]);
                         $feed->person = $person;
 
+                        $feedsUsers = $interestFeedsusersTable->find('all')
+                            ->contain(['Users'])
+                            ->where(['feed_id' => $feed->id]);
+                        $feed->feedsUsers = $feedsUsers;
+                        
                         array_push($resultData, $feed);
                     }
-
+  
                     $indexItem = $indexItem + 1;
                 }
             }
@@ -220,7 +228,7 @@ class FeedsController extends AppController
             // $response['data'] = $query;
         } catch (\Exception $e) {
             $response['status'] = $e;
-            //$response['status'] = 'error';
+            $response['error'] = 'error';
         }
 
         $this->set($response);
@@ -267,6 +275,37 @@ class FeedsController extends AppController
         } catch (\Exception $e) {
             $response['status'] = $e;
             //$response['status'] = 'error';
+        }
+
+        $this->set($response);
+        $this->setJsonResponse($response);
+    }
+
+    function saveReceiveRequest() {
+
+        $response = [
+            'status' => 'ok',
+            'data' => [],
+            '_serialize' => ['success', 'data', 'status', 'interestFeedsUsers'],
+        ];
+
+        $interestFeedsUsersTable = TableRegistry::get('interest_feeds_users');
+
+        $interestFeedsUsers = $interestFeedsUsersTable->newEntity($this->request->getData());
+        $response['interestFeedsUsers'] = $this->request->getData();
+        try {
+            if ($interestFeedsUsersTable->save($interestFeedsUsers)) {
+                $response['data'] = $interestFeedsUsers;
+            } else {
+                throw new \Exception('Save user error');
+            }
+        } catch (\Exception $e) {
+            // $response['data'] = $e;
+            // debug($e);
+            // exit;
+            $response['data'] = $e;
+
+            $response['status'] = 'error';
         }
 
         $this->set($response);
