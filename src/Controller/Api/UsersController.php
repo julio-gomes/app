@@ -84,7 +84,10 @@ class UsersController extends AppController
         $userType = @$params['userType'] ?: 'seller';
         $locationFilter = @$params['locationFilter'] ?: null;
         $filterValue = @$params['filterValue'] ?: null;
-        
+        $page = @$params['page'];
+
+        $lengthPage = 10;
+
         $query = $this->Users->find()->distinct('Users.id');
 
         if ($params['userType'] == 'seller') {
@@ -257,10 +260,27 @@ class UsersController extends AppController
         }
 
         try {
-            $resultQuery1 = $query1->toList();;
-            $resultQuery = $query->toList();;
+            $resultQuery1 = $query1->toList();
+            $resultQuery = $query->toList();
+            $resultData = [];
+            $indexItem = 0;
+            $begin = ($page - 1) * $lengthPage;
+            $end  = (($page - 1) * $lengthPage) + $lengthPage;
 
-            $response['data'] = array_merge($resultQuery1, $resultQuery);
+             $resultQueryEnd = array_merge($resultQuery1, $resultQuery);
+
+            //$resultQueryEnd;
+
+            foreach($resultQueryEnd as $key => $user) {
+                if ($begin <= $indexItem && $indexItem < $end) {
+                    array_push($resultData, $user);
+                }
+                $response[$key] = $indexItem;
+                $indexItem = $indexItem + 1;
+            }
+
+            //$response['data'] = array_merge($resultQuery1, $resultQuery);
+            $response['data'] = $resultData;
         } catch (\Exception $e) {
             //debug($e);
             //exit;
@@ -283,8 +303,8 @@ class UsersController extends AppController
         $this->paginate = ['limit' => 40];
 
         try {
-            $query = $this->Users->PersonBuyer->Buyers->BranchOfActivities->find();
-            $response['data'] = $this->paginate($query);
+            //$query = $this->Users->PersonBuyer->Buyers->BranchOfActivities->find()->limit([5]);
+            //$response['data'] = $this->paginate($query);
         } catch (\Exception $e) {
             $response['status'] = 'error';
         }

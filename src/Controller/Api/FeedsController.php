@@ -115,11 +115,12 @@ class FeedsController extends AppController
         $response = [
             'status' => 'ok',
             'data' => [],
-            '_serialize' => ['success', 'data', 'status'],
+            '_serialize' => ['success', 'data', 'status', 'feedsUsers123'],
         ];
 
         $lengthPage = 10;
         $page = $this->request->query['page'];
+        $user_id = $this->request->query['user_id'];
 
         $this->paginate = ['limit' => 40];
 
@@ -129,7 +130,7 @@ class FeedsController extends AppController
             $query = $this->Feeds->find('all', ['contain' => ['Users']])
             ->order(['created' => 'DESC']);
             //->where(['Feeds.receiveRequest'=> false]);
-            
+            $interestFeedsusersTable = TableRegistry::get('interest_feeds_users');
             $resultData = [];
             $resultQuery = $query->toArray();
 
@@ -144,6 +145,23 @@ class FeedsController extends AppController
 
                         $person = $personTable->find('all')->where(['user_id = ' => $feed->user_id]);
                         $feed->person = $person;
+
+                        $feedsUsers = $interestFeedsusersTable->find('all')
+                            ->contain(['Users'])
+                            ->where(['feed_id' => $feed->id, 'user_id' => $user_id]);
+                        $feedsUsers->toArray();
+                        foreach ($feedsUsers as $key => $feedUser) {
+                            if(!empty($feedUser)) {
+                                $feed->allowConnectRequest = false;
+                                $feed->allowPendingRequest = true;
+                            }
+                            else {
+                                $feed->allowConnectRequest = true;
+                                $feed->allowPendingRequest = false;
+                            }
+                        }
+                        
+                        $feed->feedsUsers = $feedsUsers;
 
                         array_push($resultData, $feed);
                     }
@@ -186,8 +204,8 @@ class FeedsController extends AppController
         $personTable = TableRegistry::get('persons');
         $interestFeedsusersTable = TableRegistry::get('interest_feeds_users');
         try {
-            $query = $this->Feeds->find('all', [
-                'contain' => ['Users']])
+            $query = $this->Feeds->find('all')
+                ->contain(['Users'])
                 ->order(['created' => 'DESC'])
                 ->where(['Feeds.receiveRequest' => true]);
 
@@ -215,7 +233,7 @@ class FeedsController extends AppController
                         $feed->picture = isset($feed->picture) ? $feed->picture : Router::url("/", true).'img/no-photo.png';
 
                         $feedsUsers = $interestFeedsusersTable->find('all')
-                            ->contain(['Users'])
+                            ->contain(['Users' => ['PersonSeller', 'PersonBuyer']])
                             ->where(['feed_id' => $feed->id]);
                         $feed->feedsUsers = $feedsUsers;
                         
