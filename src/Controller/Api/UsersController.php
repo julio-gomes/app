@@ -303,8 +303,8 @@ class UsersController extends AppController
         $this->paginate = ['limit' => 40];
 
         try {
-            //$query = $this->Users->PersonBuyer->Buyers->BranchOfActivities->find()->limit([5]);
-            //$response['data'] = $this->paginate($query);
+            $query = $this->Users->PersonBuyer->Buyers->BranchOfActivities->find()->limit([5]);
+            $response['data'] = $this->paginate($query);
         } catch (\Exception $e) {
             $response['status'] = 'error';
         }
