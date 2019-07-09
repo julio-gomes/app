@@ -321,6 +321,14 @@ class FeedsController extends AppController
         $response['interestFeedsUsers'] = $this->request->getData();
         try {
             if ($interestFeedsUsersTable->save($interestFeedsUsers)) {
+                $feed = $this->Feeds->get($interestFeedsUsers->feed_id, [
+                  'contain' => ['Users']
+                ]);
+                $usersTable = TableRegistry::get('users');
+                $user = $usersTable->get($interestFeedsUsers->user_id);
+                $userToMail['user_to'] = $feed["user"];
+                $userToMail['user_receive_request'] = $user; 
+                $this->Feeds->sendReceiveRequest($userToMail);
                 $response['data'] = $interestFeedsUsers;
             } else {
                 throw new \Exception('Save user error');

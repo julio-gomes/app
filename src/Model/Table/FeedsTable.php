@@ -5,6 +5,9 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use Cake\Log\Log;
+use Cake\Mailer\Email;
+use Cake\ORM\TableRegistry;
 
 class FeedsTable extends Table
 {
@@ -42,6 +45,30 @@ class FeedsTable extends Table
             ->allowEmpty('id', 'create');
 
         return $validator;
+    }
+
+    public function sendReceiveRequest($userToMail) {
+      $email = new Email(['from' => 'julio.gomes@clicksoft.com.br', 'transport' => 'default']);
+
+      Log::write('debug', 'email = ' . $userToMail['user_to']['email']);
+
+      $email->template('receiverequest')
+          ->viewVars(['user_to' => $userToMail['user_to'], 'user_receive_request' =>$userToMail['user_receive_request']])
+          ->from(['julio.gomes@clicksoft.com.br' => 'BlinkNet'])
+          ->to($userToMail['user_to']['email'])
+          ->subject('BlinkNet - Receber pedido')
+          ->emailFormat('html');
+
+      Log::write('debug', $email);
+
+      if ($email->send()) {
+
+          return true;
+
+      } else {
+
+          return false;
+      }
     }
 
     /**
