@@ -5,9 +5,10 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-use Cake\Log\Log;
 use Cake\Mailer\Email;
-use Cake\ORM\TableRegistry;
+use Cake\Event\Event;
+use ArrayObject;
+use Cake\Log\Log;
 
 class FeedsTable extends Table
 {
@@ -60,6 +61,7 @@ class FeedsTable extends Table
           ->emailFormat('html');
 
       Log::write('debug', $email);
+      Log::write('send', $email->send());
 
       if ($email->send()) {
 
